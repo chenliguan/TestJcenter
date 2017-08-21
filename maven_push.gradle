@@ -35,14 +35,6 @@ artifacts {
     archives sourcesJar
 }
 
-def getRepositoryUser() {
-    return hasProperty('MAVEN_USER') ? MAVEN_USER : ""
-}
-
-def getRepositoryApikey() {
-    return hasProperty('MAVEN_APIKEY') ? MAVEN_APIKEY : ""
-}
-
 // 配置maven库，生成POM.xml文件
 install {
     repositories.mavenInstaller {
@@ -75,9 +67,13 @@ install {
     }
 }
 
+// local.properties忽略上传github
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 bintray {
-    user = getRepositoryUser()
-    key = getRepositoryApikey()
+    user = properties.getProperty("MAVEN_USER")
+    key = properties.getProperty("MAVEN_APIKEY")
     configurations = ['archives']
     pkg {
         // repo值必须要和你创建Maven仓库的时候的名字一样
